@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
     try {
-        await mongoose.connect("mongodb://localhost:27017/drive");
+        await mongoose.connect(process.env.DATABASE_URL);
         console.log("connection to dsb successfull");
     } catch (error) {
         console.log("error while trying to connect to db");
