@@ -77,7 +77,7 @@ router.post(
 
       if (!userDetails) {
         console.log("user dose not exists");
-        return res.status(404).json({ message: "user dose not exists" });
+        return res.status(404).json({ message: "email or password is incorrect" });
       }
 
       const isPasswordCorrect = await bcrypt.compare(
@@ -87,7 +87,7 @@ router.post(
 
       if (!isPasswordCorrect) {
         console.log("password incorrect");
-        return res.status(401).json({ message: "password incorrect" });
+        return res.status(401).json({ message: "username or password is incorrect" });
       }
 
       res.cookie("loggedIn", true, { httpOnly: true, secure: true });
