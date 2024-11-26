@@ -73,7 +73,6 @@ router.post(
       }
 
       const { email, password } = req.body;
-      console.log(password);
       const userDetails = await User.findOne({ email: email });
 
       if (!userDetails) {
@@ -85,7 +84,6 @@ router.post(
         password,
         userDetails.password
       );
-      console.log(isPasswordCorrect);
 
       if (!isPasswordCorrect) {
         console.log("password incorrect");
@@ -94,7 +92,7 @@ router.post(
 
       res.cookie("loggedIn", true, { httpOnly: true, secure: true });
       return res.status(200).json({ message: "Login successful" });
-      
+
     } catch (error) {
       console.log("error while loging in", error.message);
       res.status(500).json({ message: "internal server error login failed" });
