@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
 const User = require("../models/user.model");
+const bcrypt = require("bcrypt");
 /*  /user/  */
 
 // handles rendering of registration pagge
@@ -27,7 +28,6 @@ router.post(
         message: "invalid data",
       });
     }
-    // console.log(req.body);
     const { username, email, password } = req.body;
 
     try {
@@ -37,10 +37,12 @@ router.post(
         throw new Error("User already Exists");
       }
 
+      const hashPassword = await bcrypt.hash(password, 10);
+
       const newUser = new User({
         username: username,
         email: email,
-        password: password,
+        password: hashPassword,
       });
       await newUser.save();
 
