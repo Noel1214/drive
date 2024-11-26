@@ -12,7 +12,7 @@ router.get("/register", (req, res) => {
 
 // handles registration of new user
 router.post(
-  "/get-user-data",
+    "/user-register",
 
   body("username").trim().isLength({ min: 3 }),
   body("password").trim().isLength({ min: 3 }),
