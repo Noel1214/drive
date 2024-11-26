@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const { body, validationResult } = require("express-validator");
 const User = require("../models/user.model");
-
 /*  /user/  */
 
 // handles rendering of registration pagge
@@ -23,22 +22,33 @@ router.post(
     if (!errors.isEmpty()) {
       console.log("invalid data");
       console.log(errors);
-      res.status(400).json({
+      return res.status(400).json({
         errors: errors.array(),
         message: "invalid data",
       });
     }
     // console.log(req.body);
     const { username, email, password } = req.body;
-    const newUser = new User({
-      username: username,
-      email: email,
-      password: password,
-    });
-    await newUser.save();
 
-    console.log("user created successfully");
-    res.redirect("/");
+    try {
+      const userExists = await User.findOne({ email: email });
+
+      if (userExists) {
+        throw new Error("User already Exists");
+      }
+
+      const newUser = new User({
+        username: username,
+        email: email,
+        password: password,
+      });
+      await newUser.save();
+
+      console.log("user created successfully");
+      res.redirect("/");
+    } catch (error) {
+      res.status(409).json(error.message);
+    }
   }
 );
 
