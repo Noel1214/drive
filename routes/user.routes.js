@@ -3,6 +3,7 @@ const router = express.Router();
 const { body, validationResult } = require("express-validator");
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 /*  /user/  */
 
 // handles rendering of registration pagge
@@ -89,8 +90,10 @@ router.post(
         console.log("password incorrect");
         return res.status(401).json({ message: "username or password is incorrect" });
       }
+      
+      const token = jwt.sign({userId: userDetails._id}, process.env.JWT_SECRET);
 
-      res.cookie("loggedIn", true, { httpOnly: true, secure: true });
+      res.cookie("token", token, { httpOnly: true, secure: true });
       return res.status(200).json({ message: "Login successful" });
 
     } catch (error) {
