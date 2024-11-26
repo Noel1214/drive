@@ -3,10 +3,12 @@ const express = require('express');
 const userRouter = require('./routes/user.routes');
 const connectDB = require('./config/db');
 const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser");
 
 dotenv.config();
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
