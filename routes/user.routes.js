@@ -12,7 +12,7 @@ router.get("/register", (req, res) => {
 
 // handles registration of new user
 router.post(
-    "/user-register",
+  "/user-register",
 
   body("username").trim().isLength({ min: 3 }),
   body("password").trim().isLength({ min: 3 }),
@@ -33,9 +33,9 @@ router.post(
     try {
       const userExists = await User.findOne({ email: email });
 
-      if (userExists) {
-        throw new Error("User already Exists");
-      }
+      // if (userExists) {
+      //   throw new Error("User already Exists");
+      // }
 
       const hashPassword = await bcrypt.hash(password, 10);
 
@@ -50,6 +50,54 @@ router.post(
       res.redirect("/");
     } catch (error) {
       res.status(409).json(error.message);
+    }
+  }
+);
+
+router.get("/login", (req, res) => {
+  res.render("login");
+});
+
+router.post(
+  "/user-login",
+  body("email").trim().isEmail(),
+  body("password").trim().isLength({ min: 3 }),
+
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        console.log("invalid data");
+        console.log(errors);
+        return res.status(400).json({ message: "invalid data" });
+      }
+
+      const { email, password } = req.body;
+      console.log(password);
+      const userDetails = await User.findOne({ email: email });
+
+      if (!userDetails) {
+        console.log("user dose not exists");
+        return res.status(404).json({ message: "user dose not exists" });
+      }
+
+      const isPasswordCorrect = await bcrypt.compare(
+        password,
+        userDetails.password
+      );
+      console.log(isPasswordCorrect);
+
+      if (!isPasswordCorrect) {
+        console.log("password incorrect");
+        return res.status(401).json({ message: "password incorrect" });
+      }
+
+      res.cookie("loggedIn", true, { httpOnly: true, secure: true });
+      return res.status(200).json({ message: "Login successful" });
+      
+    } catch (error) {
+      console.log("error while loging in", error.message);
+      res.status(500).json({ message: "internal server error login failed" });
     }
   }
 );
